@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -101,20 +100,4 @@ func mustGetEnv(key string) string {
 		log.Fatalf("Environment variable %s is required", key)
 	}
 	return value
-}
-
-func getEnvAsInt(key string, defaultValue int) int {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvAsBool(key string, defaultValue bool) bool {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.ParseBool(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
 }

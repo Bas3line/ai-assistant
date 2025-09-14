@@ -15,6 +15,10 @@ import (
 	"ai-assistant/internal/models"
 )
 
+type contextKey string
+
+const userContextKey contextKey = "user"
+
 type MockAIUsecase struct {
 	mock.Mock
 }
@@ -88,7 +92,7 @@ func TestAIHandler_Ask(t *testing.T) {
 						ID:    "user123",
 						Email: "test@example.com",
 					}
-					ctx := context.WithValue(r.Context(), "user", user)
+					ctx := context.WithValue(r.Context(), userContextKey, user)
 					next.ServeHTTP(w, r.WithContext(ctx))
 				})
 			})

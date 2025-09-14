@@ -13,6 +13,10 @@ import (
 	"ai-assistant/pkg/errors"
 )
 
+type contextKey string
+
+const userContextKey contextKey = "user"
+
 type Claims struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
@@ -89,14 +93,14 @@ func (a *AuthService) RequireAuth() func(http.Handler) http.Handler {
 				Email: claims.Email,
 			}
 
-			ctx := context.WithValue(r.Context(), "user", user)
+			ctx := context.WithValue(r.Context(), userContextKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
 func GetCurrentUser(r *http.Request) (*models.AuthUser, error) {
-	user := r.Context().Value("user")
+	user := r.Context().Value(userContextKey)
 	if user == nil {
 		return nil, errors.ErrUnauthorized("User not found in context")
 	}

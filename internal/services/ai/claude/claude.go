@@ -98,7 +98,7 @@ func (c *ClaudeService) GenerateResponse(prompt string) (string, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		c.logger.Errorf("Claude API error: %s", string(body))
-		return "", fmt.Errorf("Claude API error: %s", resp.Status)
+		return "", fmt.Errorf("claude API error: %s", resp.Status)
 	}
 
 	var claudeResp ClaudeResponse
@@ -107,7 +107,7 @@ func (c *ClaudeService) GenerateResponse(prompt string) (string, error) {
 	}
 
 	if claudeResp.Error != nil {
-		return "", fmt.Errorf("Claude API error: %s", claudeResp.Error.Message)
+		return "", fmt.Errorf("claude API error: %s", claudeResp.Error.Message)
 	}
 
 	if len(claudeResp.Content) == 0 {
