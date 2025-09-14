@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-go"
-  output   = "./internal/database"
+  output   = "../internal/database"
 }
 
 datasource db {
