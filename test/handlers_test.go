@@ -13,11 +13,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"ai-assistant/internal/handlers"
 	"ai-assistant/internal/models"
+	"ai-assistant/internal/services/auth"
 )
-
-type contextKey string
-
-const userContextKey contextKey = "user"
 
 type MockAIUsecase struct {
 	mock.Mock
@@ -26,6 +23,17 @@ type MockAIUsecase struct {
 func (m *MockAIUsecase) ProcessAIRequest(ctx context.Context, userID string, req *models.AIRequest) (*models.AIResponse, error) {
 	args := m.Called(ctx, userID, req)
 	return args.Get(0).(*models.AIResponse), args.Error(1)
+}
+
+func mockAuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := &models.AuthUser{
+			ID:    "user123",
+			Email: "test@example.com",
+		}
+		ctx := context.WithValue(r.Context(), auth.UserContextKey, user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func TestAIHandler_Ask(t *testing.T) {
@@ -85,17 +93,7 @@ func TestAIHandler_Ask(t *testing.T) {
 
 			router := chi.NewRouter()
 			
-			// Mock authentication middleware
-			router.Use(func(next http.Handler) http.Handler {
-				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					user := &models.AuthUser{
-						ID:    "user123",
-						Email: "test@example.com",
-					}
-					ctx := context.WithValue(r.Context(), userContextKey, user)
-					next.ServeHTTP(w, r.WithContext(ctx))
-				})
-			})
+			router.Use(mockAuthMiddleware)
 
 			router.Route("/ai", func(r chi.Router) {
 				handler.RegisterRoutes(r)
