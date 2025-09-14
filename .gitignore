@@ -18,11 +18,6 @@
 go.work
 go.work.sum
 
-# Build artifacts
-/bin/
-/dist/
-/build/
-
 # Environment files
 .env
 .env.local
